@@ -53,7 +53,7 @@
   const save = () => { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (err) { /* ignore */ } };
 
   /* ---------- demo data vs real accounts ---------- */
-  const AUTH = window.HubAuth || { enabled: false, user: () => null, onChange() {}, token: () => null, displayName: () => '' };
+  const AUTH = window.HubAuth || { enabled: false, user: () => null, onChange() {}, onSettings() {}, providerReady: () => true, token: () => null, displayName: () => '' };
   const LIVEAPI = window.HubLive || null;
   const clone = o => JSON.parse(JSON.stringify(o));
   const initialOf = s => (String(s || '').match(/[A-Za-z0-9ก-ฮ]/) || ['?'])[0].toUpperCase();
@@ -383,6 +383,13 @@
 
   const connectEmpty = s => {
     const p = AUTH.enabled && PROVIDER[s.id];
+    if (p && !AUTH.providerReady(p)) return `
+    <div class="connect-empty">
+      <span class="big">${I[s.id]}</span>
+      <h3>${esc(s.name)} ยังไม่เปิดให้เชื่อม</h3>
+      <p>ผู้ดูแลยังไม่ได้เปิดการเชื่อมต่อกับ ${esc(PROVIDER_NAME[p])} ในระบบหลังบ้าน (Supabase) เปิดแล้วปุ่มเชื่อมต่อจะขึ้นที่นี่เอง</p>
+      <button class="btn" type="button" disabled>${I.plug} เชื่อมต่อด้วย ${PROVIDER_NAME[p]}</button>
+    </div>`;
     return `
     <div class="connect-empty">
       <span class="big">${I[s.id]}</span>
@@ -750,6 +757,7 @@
     const s = svc(id);
     if (AUTH.enabled && PROVIDER[id]) {
       const p = PROVIDER[id];
+      if (!AUTH.providerReady(p)) { toast(`ยังไม่เปิดการเชื่อมต่อกับ ${PROVIDER_NAME[p]}`); return; }
       if (btn) { btn.disabled = true; btn.innerHTML = `<span class="spin"></span> กำลังไปที่ ${PROVIDER_NAME[p]}…`; }
       AUTH.oauth(p).catch(err => {
         if (btn) { btn.disabled = false; btn.textContent = 'ลองอีกครั้ง'; }
@@ -801,6 +809,7 @@
           : on ? `<span class="conn-state">${I.check} เชื่อมแล้วผ่าน ${PROVIDER_NAME[p]}</span>` : `<span class="row-sub">เชื่อมผ่านบัญชี ${PROVIDER_NAME[p]}</span>`;
         const btn = s.id === 'news' || s.id === 'line' ? ''
           : on ? `<button class="btn" type="button" data-mact="disconnect" data-arg="${s.id}">ยกเลิก</button>`
+          : !AUTH.providerReady(p) ? '<button class="btn" type="button" disabled title="ผู้ดูแลยังไม่ได้เปิดใน Supabase">ยังไม่เปิด</button>'
           : `<button class="btn primary" type="button" data-mact="connect" data-arg="${s.id}">เชื่อมต่อ</button>`;
         return `
       <div class="conn-row" style="--c:${s.color}">
@@ -868,16 +877,22 @@
     $('#authPassword').setAttribute('autocomplete', signup ? 'new-password' : 'current-password');
     $('#authSubmit').textContent = signup ? 'สมัครสมาชิก' : 'เข้าสู่ระบบ';
     $('#authForgot').hidden = signup;
+    // only offer the sign-in methods that are switched on in Supabase
+    let anyOauth = false;
+    document.querySelectorAll('#authGuest [data-provider]').forEach(b => { b.hidden = !AUTH.providerReady(b.dataset.provider); anyOauth = anyOauth || !b.hidden; });
+    $('#authGuest .oauth').hidden = !anyOauth;
+    $('#authGuest .divider').hidden = !anyOauth;
+    $('#authGuest .note').hidden = !anyOauth;
     if (u) {
       const name = AUTH.displayName();
       $('#memberAvatar').textContent = initialOf(name);
       $('#memberName').textContent = name;
       $('#memberEmail').textContent = u.email || '';
       $('#memberLinks').innerHTML = [['google', 'Google', 'Gmail และ YouTube', 'gmail'], ['azure', 'Microsoft', 'OneDrive', 'onedrive']].map(([p, label, what, icon]) => {
-        const on = !!AUTH.token(p);
+        const on = !!AUTH.token(p), ready = AUTH.providerReady(p);
         return `<div class="conn-row" style="--c:${svc(icon).color}"><span class="svc-icon">${I[icon]}</span>
-          <span class="row-main"><b>${label}</b><span class="row-sub">${what}</span>${on ? `<span class="conn-state">${I.check} เชื่อมแล้ว</span>` : ''}</span>
-          <button class="btn ${on ? '' : 'primary'}" type="button" data-provider="${p}">${on ? 'เชื่อมใหม่' : 'เชื่อมต่อ'}</button></div>`;
+          <span class="row-main"><b>${label}</b><span class="row-sub">${what}</span>${on ? `<span class="conn-state">${I.check} เชื่อมแล้ว</span>` : ready ? '' : '<span class="row-sub">ผู้ดูแลยังไม่ได้เปิดใน Supabase</span>'}</span>
+          ${ready ? `<button class="btn ${on ? '' : 'primary'}" type="button" data-provider="${p}">${on ? 'เชื่อมใหม่' : 'เชื่อมต่อ'}</button>` : '<button class="btn" type="button" disabled>ยังไม่เปิด</button>'}</div>`;
       }).join('');
     }
   }
@@ -960,6 +975,11 @@
     if (!authModal.hidden) renderAuth();
   });
   renderAccount();
+  AUTH.onSettings(() => {
+    if (!authModal.hidden) renderAuth();
+    if (current) renderDrawer();
+    if (!modal.hidden) renderModal();
+  });
 
   /* closet and drawer share space, so opening one closes the other */
   $('#btnCloset').addEventListener('click', () => { if (!$('#closet').hidden) { closeDrawer(); closeModal(); } });

@@ -6,8 +6,10 @@
   const enabled = !!(C.supabaseUrl && C.supabaseAnonKey && window.supabase && window.supabase.createClient);
   const TOKENS = 'office-hub-tokens';
   const PENDING = 'office-hub-pending-provider';
-  const listeners = [];
+  const listeners = [], settingsListeners = [];
   let client = null, user = null, ready = false;
+  // which sign-in methods are switched on in Supabase (read from its public settings endpoint)
+  let providers = { email: true, google: true, azure: true }, providersKnown = false;
 
   const readTokens = () => { try { return JSON.parse(localStorage.getItem(TOKENS) || '{}'); } catch (e) { return {}; } };
   const writeTokens = v => { try { localStorage.setItem(TOKENS, JSON.stringify(v)); } catch (e) { /* storage blocked */ } };
@@ -41,6 +43,15 @@
       // let the app react after Supabase finishes its own work
       setTimeout(emit, 0);
     });
+    fetch(C.supabaseUrl.replace(/\/+$/, '') + '/auth/v1/settings', { headers: { apikey: C.supabaseAnonKey } })
+      .then(r => (r.ok ? r.json() : Promise.reject(new Error('settings ' + r.status))))
+      .then(s => {
+        const ext = s.external || {};
+        providers = { email: !!ext.email, google: !!ext.google, azure: !!ext.azure };
+        providersKnown = true;
+        settingsListeners.forEach(fn => { try { fn(providers); } catch (e) { console.error(e); } });
+      })
+      .catch(() => { /* unknown: keep every button and let Supabase report errors */ });
   }
 
   const here = () => location.origin + location.pathname;
@@ -54,6 +65,9 @@
     isReady: () => !enabled || ready,
     user: () => user,
     onChange(fn) { listeners.push(fn); },
+    onSettings(fn) { settingsListeners.push(fn); if (providersKnown) fn(providers); },
+    // true when this sign-in method is switched on (or when Supabase could not tell us)
+    providerReady: p => !providersKnown || !!providers[p],
     providerOf,
 
     async signUp(email, password, name) {

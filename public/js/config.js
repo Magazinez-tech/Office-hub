@@ -3,8 +3,8 @@
    - ห้ามใส่ service_role key หรือ client secret ของ Google / Microsoft ในไฟล์นี้เด็ดขาด
    - ถ้าเว้นว่าง ระบบสมาชิกจะซ่อนไว้ และเว็บใช้ข้อมูลตัวอย่าง (ยกเว้นข่าวและอากาศที่เป็นของจริงเสมอ) */
 window.HUB_CONFIG = {
-  supabaseUrl: '',
-  supabaseAnonKey: '',
+  supabaseUrl: 'https://apmlcgxisyxvznzxnpry.supabase.co',
+  supabaseAnonKey: 'sb_publishable_F_FX9GTwUlbi3Uj0RblEtA_qy3NQAAh',
 
   // ตำแหน่งสำหรับพยากรณ์อากาศ (Open-Meteo ไม่ต้องใช้ key)
   weather: { city: 'กรุงเทพฯ', lat: 13.75, lon: 100.52 },
