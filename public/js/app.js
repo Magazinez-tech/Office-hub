@@ -1045,6 +1045,37 @@
   $('#tvpSize').innerHTML = I.expand;
   $('#tvpClose').innerHTML = I.close;
 
+  /* ---------- stock ticker (Thai + US) ---------- */
+  const ticker = $('#ticker'), track = $('#tickerTrack');
+  const fmtNum = n => Number(n).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  function renderTicker(items, fetchedAt) {
+    const one = items.map(i => {
+      const dir = i.change > 0 ? 'up' : i.change < 0 ? 'down' : 'flat';
+      const arrow = dir === 'up' ? '▲' : dir === 'down' ? '▼' : '•';
+      const sign = i.change > 0 ? '+' : '';
+      return `<span class="tk" title="${esc(i.symbol)} · ${esc(i.currency || '')}${i.time ? ' · อัปเดต ' + esc(new Date(i.time).toLocaleString('th-TH', { dateStyle: 'short', timeStyle: 'short' })) : ''}">`
+        + `<span class="mk">${i.market === 'th' ? 'TH' : 'US'}</span><b>${esc(i.label)}</b> ${fmtNum(i.price)} `
+        + `<span class="${dir}">${arrow} ${sign}${fmtNum(i.change)} (${sign}${i.changePct.toFixed(2)}%)</span></span>`;
+    }).join('');
+    // the list is drawn twice so the scroll loops without a gap
+    track.innerHTML = one + `<span aria-hidden="true" style="display:contents">${one}</span>`;
+    track.style.setProperty('--tick-dur', Math.max(40, items.length * 5) + 's');
+    $('#tickerTime').textContent = 'อัปเดต ' + hhmm(new Date(fetchedAt || Date.now()));
+    ticker.hidden = false;
+    document.body.classList.add('has-ticker');
+    requestAnimationFrame(updateShift);
+  }
+  async function loadStocks() {
+    try {
+      const res = await fetch('/api/stocks');
+      if (!res.ok) throw new Error('stocks ' + res.status);
+      const j = await res.json();
+      if (j.items && j.items.length) renderTicker(j.items, j.fetchedAt);
+    } catch (err) { /* keep the last prices, or stay hidden when the function is not running */ }
+  }
+  loadStocks();
+  setInterval(() => { if (!document.hidden) loadStocks(); }, 60000);
+
   /* ---------- toast ---------- */
   const toastEl = $('#toast'); let toastTimer = 0;
   function toast(text) {

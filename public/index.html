@@ -64,6 +64,13 @@
 <!-- ป้ายลอยเหนือสิ่งของในห้อง (ตำแหน่งคำนวณจากฉาก 3D ทุกเฟรม) -->
 <div class="pins" id="pins"></div>
 
+<!-- แถบราคาหุ้นวิ่งด้านล่างสุด (ข้อมูลจาก Yahoo Finance ผ่าน /api/stocks) -->
+<div class="ticker" id="ticker" role="region" aria-label="ราคาหุ้นไทยและสหรัฐฯ" hidden>
+  <span class="ticker-tag">หุ้น</span>
+  <div class="ticker-view"><div class="ticker-track" id="tickerTrack"></div></div>
+  <span class="ticker-time" id="tickerTime"></span>
+</div>
+
 <!-- แถบแอปด้านล่าง -->
 <nav class="dock" id="dock" aria-label="แอปที่เชื่อมต่อ"></nav>
 
