@@ -302,6 +302,10 @@
       g.font = '500 17px "Mali", sans-serif'; g.fillStyle = 'rgba(255,255,255,.85)'; g.fillText(tvVideo.channel, 22, H - 30);
       g.fillStyle = 'rgba(255,255,255,.3)'; g.fillRect(0, H - 8, W, 8);
       g.fillStyle = '#ff6f8e'; g.fillRect(0, H - 8, W * tvVideo.p, 8);
+      if (tvVideo.paused) { // big pause sign while the real video is paused
+        g.fillStyle = 'rgba(25,18,40,.45)'; g.fillRect(0, 0, W, H);
+        g.fillStyle = '#ffffff'; rr(g, W / 2 - 34, H / 2 - 50, 24, 76, 8); g.fill(); rr(g, W / 2 + 10, H / 2 - 50, 24, 76, 8); g.fill();
+      }
     }
     tvTex.needsUpdate = true;
   }
@@ -933,8 +937,8 @@
       }
     }
 
-    if (tvVideo) tvVideo.p = (tvVideo.p + dt / tvVideo.len) % 1;
-    tvAcc += dt; if (tvVideo && tvAcc > 0.12) { tvAcc = 0; drawTV(); }
+    if (tvVideo && !tvVideo.paused) tvVideo.p = (tvVideo.p + dt / tvVideo.len) % 1;
+    tvAcc += dt; if (tvVideo && !tvVideo.paused && tvAcc > 0.12) { tvAcc = 0; drawTV(); }
 
     renderer.render(scene, camera);
     emit('frame');
@@ -975,6 +979,7 @@
     setKidLine(fn) { hub.kidLine = fn; },
     setPhoneUnread(n) { if (n !== phoneUnread) { phoneUnread = n; drawPhone(); } },
     playVideo(v) { tvVideo = v ? Object.assign({ len: 60 }, v, { p: 0 }) : null; drawTV(); },
+    pauseVideo(p) { if (tvVideo) { tvVideo.paused = !!p; drawTV(); } },
     videoProgress: () => (tvVideo ? tvVideo.p : 0),
     celebrate(name) { const p = HOTSPOTS[name]; if (!p) return; p.obj.getWorldPosition(wp); wp.y += p.lift; burst(wp.clone(), 5); }
   };

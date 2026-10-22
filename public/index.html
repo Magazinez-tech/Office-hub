@@ -80,6 +80,23 @@
   <div class="drawer-body" id="drawerBody"></div>
 </aside>
 
+<!-- หน้าต่างวิดีโอ YouTube (เด้งขึ้นเมื่อเลือกคลิป) -->
+<section class="tv-player" id="tvPlayer" aria-label="หน้าต่างวิดีโอ" hidden>
+  <div class="tvp-head">
+    <span class="tvp-dot" aria-hidden="true"></span>
+    <span class="row-main"><span class="row-title" id="tvpTitle"></span><span class="row-sub" id="tvpChannel"></span></span>
+    <button class="x" id="tvpSize" type="button" aria-label="ขยายหน้าต่างวิดีโอ"></button>
+    <button class="x" id="tvpClose" type="button" aria-label="ปิดวิดีโอ"></button>
+  </div>
+  <div class="tvp-screen">
+    <iframe id="tvpFrame" title="วิดีโอ YouTube" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
+  </div>
+  <div class="tvp-controls">
+    <button class="btn primary" id="tvpToggle" type="button" aria-pressed="false"></button>
+    <span class="hint" id="tvpState" aria-live="polite"></span>
+  </div>
+</section>
+
 <!-- แต่งตัวผู้ช่วย (ใช้โค้ดเดียวกับออฟฟิศจิ๋ว) -->
 <div class="closet" id="closet" role="dialog" aria-labelledby="closetTitle" hidden>
   <div class="closet-head">

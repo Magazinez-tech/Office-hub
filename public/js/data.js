@@ -94,11 +94,12 @@ window.HUB_DATA = {
   ],
 
   videos: [
-    { id: 'v1', title: 'จัดโต๊ะทำงานมินิมอลใน 10 นาที', channel: 'ห้องเล็กสไตล์ดี', views: '1.2 แสนครั้ง', ago: '2 วันที่แล้ว', dur: '10:24', colors: ['#ffb6c8', '#ffd166'], isNew: true, watched: 0 },
-    { id: 'v2', title: 'ปั้นโมเดล 3D ตัวการ์ตูนน่ารักสำหรับมือใหม่', channel: 'ปั้นสามมิติ', views: '8.4 หมื่นครั้ง', ago: '3 วันที่แล้ว', dur: '24:10', colors: ['#9db8ff', '#c9b6ff'], isNew: true, watched: 0 },
-    { id: 'v3', title: 'รีวิวเก้าอี้ทำงานงบไม่เกิน 3,000 บาท', channel: 'ของดีบอกต่อ', views: '4.5 หมื่นครั้ง', ago: '5 วันที่แล้ว', dur: '14:02', colors: ['#8fd3c1', '#fff1b8'], isNew: true, watched: 0 },
-    { id: 'v4', title: 'ทำกาแฟดริปง่ายๆ ที่ออฟฟิศ', channel: 'กาแฟตอนเช้า', views: '2.1 หมื่นครั้ง', ago: '1 สัปดาห์ที่แล้ว', dur: '8:45', colors: ['#d9a877', '#ffd8c2'], isNew: true, watched: 0 },
-    { id: 'v5', title: 'เพลงบรรเลงฟังตอนทำงาน 2 ชั่วโมง', channel: 'โฟกัสมิวสิก', views: '3.3 แสนครั้ง', ago: '1 เดือนที่แล้ว', dur: '2:00:00', colors: ['#7d8fe0', '#8fe3c8'], watched: 0.62 },
-    { id: 'v6', title: 'ยืดเส้นที่โต๊ะทำงาน 5 นาที', channel: 'ออฟฟิศสุขภาพดี', views: '6.7 หมื่นครั้ง', ago: '2 สัปดาห์ที่แล้ว', dur: '5:12', colors: ['#ff9a76', '#ffd1dc'], watched: 0.3 }
+    // คลิปจริงบน YouTube ที่อนุญาตให้ฝังได้ (ภาพยนตร์สั้นแบบเปิดของ Blender และสถานีเพลง Lofi Girl)
+    { id: 'aqz-KE-bpKQ', title: 'Big Buck Bunny 60fps 4K', channel: 'Blender', views: '', ago: 'ภาพยนตร์สั้น', dur: '10:35', colors: ['#ffb6c8', '#ffd166'], isNew: true, watched: 0 },
+    { id: '4xDzrJKXOOY', title: 'synthwave radio: beats to chill/game to', channel: 'Lofi Girl', views: '', ago: 'ถ่ายทอดสด', dur: 'LIVE', colors: ['#7d8fe0', '#c9b6ff'], isNew: true, watched: 0 },
+    { id: 'WhWc3b3KhnY', title: 'Spring - Blender Open Movie', channel: 'Blender Studio', views: '', ago: 'ภาพยนตร์สั้น', dur: '7:44', colors: ['#8fd3c1', '#fff1b8'], isNew: true, watched: 0 },
+    { id: 'eRsGyueVLvQ', title: 'Sintel - Open Movie by Blender Foundation', channel: 'Blender', views: '', ago: 'ภาพยนตร์สั้น', dur: '14:48', colors: ['#d9a877', '#ffd8c2'], isNew: true, watched: 0 },
+    { id: 'R6MlUcmOul8', title: 'Tears of Steel - Blender VFX Open Movie', channel: 'Blender', views: '', ago: 'ภาพยนตร์สั้น', dur: '12:14', colors: ['#9db8ff', '#8fe3c8'], watched: 0.4 },
+    { id: 'TLkA0RELQ1g', title: 'Elephants Dream', channel: 'Blender', views: '', ago: 'ภาพยนตร์สั้น', dur: '10:54', colors: ['#ff9a76', '#ffd1dc'], watched: 0.2 }
   ]
 };

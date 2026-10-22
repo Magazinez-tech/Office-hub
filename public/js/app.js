@@ -6,7 +6,7 @@
   const noop = () => {};
   const S = window.OfficeScene || {
     on: noop, say: noop, focus: noop, setViewShift: noop, screenPos: () => null, getLook: () => ({ gender: 'girl' }),
-    setKidLine: noop, setPhoneUnread: noop, playVideo: noop, videoProgress: () => 0, celebrate: noop
+    setKidLine: noop, setPhoneUnread: noop, playVideo: noop, pauseVideo: noop, videoProgress: () => 0, celebrate: noop
   };
 
   /* ---------- small helpers ---------- */
@@ -36,6 +36,10 @@
     folder: svg('<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>'),
     stop: svg('<rect x="7" y="7" width="10" height="10" rx="2" fill="currentColor"/>'),
     play: svg('<path d="M8 5.5v13l11-6.5z" fill="currentColor" stroke="none"/>'),
+    pause: svg('<rect x="6.5" y="5" width="4" height="14" rx="1.2" fill="currentColor" stroke="none"/><rect x="13.5" y="5" width="4" height="14" rx="1.2" fill="currentColor" stroke="none"/>'),
+    expand: svg('<path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7"/>'),
+    shrink: svg('<path d="M20 10h-6V4M4 14h6v6M14 10l7-7M10 14l-7 7"/>'),
+    close: svg('<path d="M6 6l12 12M18 6 6 18"/>'),
     group: svg('<circle cx="9" cy="9" r="3"/><circle cx="16.5" cy="10" r="2.5"/><path d="M3.5 19a5.5 5.5 0 0 1 11 0M14 19a4 4 0 0 1 7 0"/>'),
     check: svg('<path d="m5 12.5 4.5 4.5L19 7.5"/>'),
     tv: svg('<rect x="3" y="5" width="18" height="12" rx="2"/><path d="M8 21h8M12 17v4"/>'),
@@ -600,7 +604,8 @@
   const vcard = (vd, playing) => `
     <button class="vcard ${playing ? 'playing' : ''}" type="button" data-act="videoPlay" data-arg="${vd.id}">
       <span class="thumb" style="--c1:${vd.colors[0]};--c2:${vd.colors[1]}">
-        ${vd.thumb ? `<img src="${esc(vd.thumb)}" alt="" loading="lazy">` : ''}
+        <img src="${esc(vd.thumb || 'https://i.ytimg.com/vi/' + encodeURIComponent(vd.id) + '/mqdefault.jpg')}" alt="" loading="lazy">
+        ${vd.dur === 'LIVE' ? '<span class="new">สด</span>' : ''}
         <span class="play">${I.play}</span>
         ${vd.isNew ? '<span class="new">ใหม่</span>' : ''}
         ${vd.dur ? `<span class="dur">${esc(vd.dur)}</span>` : ''}
@@ -611,18 +616,9 @@
     </button>`;
   R.youtube = v => {
     const p = v.playing && D.videos.find(x => x.id === v.playing);
-    const top = p && p.live ? `
-      <div class="player embed">
-        <iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(p.id)}?autoplay=1&rel=0" title="${esc(p.title)}" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>
-      </div>
-      <div class="toolbar-row"><span class="live-tag">กำลังเล่น · ทีวีในห้องแสดงชื่อคลิปด้วย</span><button class="btn push" type="button" data-act="videoStop">${I.stop} หยุด</button></div>` : p ? `
-      <div class="player" style="--c1:${p.colors[0]};--c2:${p.colors[1]}">
-        <button class="pstop" type="button" data-act="videoStop" aria-label="หยุดเล่นบนทีวี">${I.stop}</button>
-        <span class="ptitle">${esc(p.title)}</span>
-        <span class="psub"><span class="live"></span>กำลังเล่นบนทีวีในห้อง · ${esc(p.channel)}</span>
-        <div class="ptrack"><div class="pfill" id="vprog"></div></div>
-      </div>` : `
-      <div class="player-idle">${I.tv}<span>แตะวิดีโอเพื่อเปิดบนทีวีที่ผนังห้อง ผู้ช่วยจะดูไปกับคุณด้วย</span></div>`;
+    const top = p ? `
+      <div class="player-idle">${I.tv}<span>กำลังเล่น <b>${esc(p.title)}</b> ในหน้าต่างวิดีโอ</span><button class="btn push" type="button" data-act="videoStop">${I.stop} ปิด</button></div>` : `
+      <div class="player-idle">${I.tv}<span>แตะวิดีโอ แล้วหน้าต่างวิดีโอจะเด้งขึ้นมาให้ดูได้เลย กดหยุดชั่วคราวได้ และทีวีในห้องจะเล่นตาม</span></div>`;
     const fresh = D.videos.filter(x => x.isNew), cont = D.videos.filter(x => !x.isNew);
     if (!D.videos.length) return `${top}<p class="empty">ยังไม่มีวิดีโอใหม่จากช่องที่คุณติดตาม</p>`;
     const live = realData('youtube');
@@ -653,7 +649,7 @@
           view.news.cat = null; view.news.open = item;
         } else if (id === 'youtube') {
           const vd = D.videos.find(x => x.id === item);
-          if (vd) { view.youtube.playing = vd.id; S.playVideo({ title: vd.title, channel: vd.channel, colors: vd.colors, len: 45 }); }
+          if (vd) openPlayer(vd);
         } else if (id === 'onedrive') {
           toast(`เปิด "${item}" (จำลอง)`);
         }
@@ -692,12 +688,11 @@
     newsOpen: id => { id = String(id); view.news.open = view.news.open === id ? null : id; renderDrawer(); },
     videoPlay: id => {
       const vd = D.videos.find(x => x.id === id);
-      view.youtube.playing = id;
-      S.playVideo({ title: vd.title, channel: vd.channel, colors: vd.colors, len: 45 });
-      renderDrawer(true);
-      S.say(`เปิดบนทีวีให้แล้ว${e()}`);
+      if (!vd) return;
+      openPlayer(vd);
+      S.say(`เปิดวิดีโอให้แล้ว${e()}`);
     },
-    videoStop: () => { view.youtube.playing = null; S.playVideo(null); renderDrawer(); }
+    videoStop: () => closePlayer()
   };
   const SUBMIT = {
     sendMail: async form => {
@@ -782,14 +777,14 @@
       const p = PROVIDER[id];
       AUTH.forget(p);
       Object.keys(PROVIDER).filter(k => PROVIDER[k] === p).forEach(k => { delete LIVE[k]; });
-      if (p === 'google' && view.youtube.playing) { view.youtube.playing = null; S.playVideo(null); }
+      if (p === 'google' && view.youtube.playing) closePlayer();
       if (current) renderDrawer(true);
       renderModal(); refreshCounts();
       toast(`ยกเลิกการเชื่อม ${PROVIDER_NAME[p]} บนเครื่องนี้แล้ว`);
       return;
     }
     state.connected[id] = false; save();
-    if (id === 'youtube' && view.youtube.playing) { view.youtube.playing = null; S.playVideo(null); }
+    if (id === 'youtube' && view.youtube.playing) closePlayer();
     if (current === id) renderDrawer(true);
     renderModal(); refreshCounts();
     toast(`ยกเลิกการเชื่อมต่อ ${s.name} แล้ว`);
@@ -965,7 +960,7 @@
       Object.keys(LIVE).forEach(k => { delete LIVE[k]; });
       const d = clone(DEMO); D.emails = d.emails; D.files = d.files; D.videos = d.videos;
       view.gmail = {}; view.onedrive = {};
-      if (view.youtube.playing) S.playVideo(null);
+      if (view.youtube.playing) closePlayer();
       view.youtube = {};
     }
     lastUserId = u ? u.id : null;
@@ -990,6 +985,65 @@
     else if (!modal.hidden) closeModal();
     else if (current && $('#closet').hidden) closeDrawer();
   });
+
+  /* ---------- pop-up YouTube player (real video, real pause) ---------- */
+  const player = $('#tvPlayer'), frame = $('#tvpFrame');
+  const YT_ORIGIN = 'https://www.youtube-nocookie.com';
+  let paused = false;
+  function ytCommand(func) {
+    try { frame.contentWindow.postMessage(JSON.stringify({ event: 'command', func, args: [] }), YT_ORIGIN); } catch (err) { /* not loaded yet */ }
+  }
+  function setPaused(p, label) {
+    paused = p;
+    $('#tvpToggle').innerHTML = p ? `${I.play} เล่นต่อ` : `${I.pause} หยุดชั่วคราว`;
+    $('#tvpToggle').setAttribute('aria-pressed', String(p));
+    $('#tvpState').textContent = label || (p ? 'หยุดอยู่' : 'กำลังเล่น');
+    player.classList.toggle('paused', p);
+    S.pauseVideo(p);
+  }
+  function openPlayer(vd) {
+    view.youtube.playing = vd.id;
+    $('#tvpTitle').textContent = vd.title;
+    $('#tvpChannel').textContent = vd.channel;
+    frame.src = `${YT_ORIGIN}/embed/${encodeURIComponent(vd.id)}?autoplay=1&playsinline=1&rel=0&enablejsapi=1&origin=${encodeURIComponent(location.origin)}`;
+    player.hidden = false;
+    setPaused(false, 'กำลังโหลด…');
+    S.playVideo({ title: vd.title, channel: vd.channel, colors: vd.colors, len: 60 });
+    // phones: the bottom sheet would cover the video, so tuck it away and keep the camera on the TV
+    if (!wide() && current) closeDrawer(true);
+    else if (current === 'youtube') renderDrawer();
+    $('#tvpToggle').focus({ preventScroll: true });
+  }
+  function closePlayer() {
+    frame.removeAttribute('src');
+    player.hidden = true;
+    player.classList.remove('large');
+    view.youtube.playing = null;
+    S.playVideo(null);
+    if (current === 'youtube') renderDrawer();
+  }
+  // ask the YouTube player to report its state, so our button stays right when people use YouTube's own controls
+  frame.addEventListener('load', () => {
+    try { frame.contentWindow.postMessage(JSON.stringify({ event: 'listening', id: 'tvp' }), YT_ORIGIN); } catch (err) { /* ignore */ }
+  });
+  window.addEventListener('message', ev => {
+    if (ev.origin !== YT_ORIGIN || ev.source !== frame.contentWindow) return;
+    let d; try { d = typeof ev.data === 'string' ? JSON.parse(ev.data) : ev.data; } catch (err) { return; }
+    if (!d) return;
+    const st = d.event === 'onStateChange' ? d.info : d.info && d.info.playerState;
+    if (st === 1) setPaused(false);
+    else if (st === 2) setPaused(true);
+    else if (st === 0) setPaused(true, 'จบแล้ว');
+  });
+  $('#tvpToggle').addEventListener('click', () => { ytCommand(paused ? 'playVideo' : 'pauseVideo'); setPaused(!paused); });
+  $('#tvpSize').addEventListener('click', () => {
+    const large = player.classList.toggle('large');
+    $('#tvpSize').innerHTML = large ? I.shrink : I.expand;
+    $('#tvpSize').setAttribute('aria-label', large ? 'ย่อหน้าต่างวิดีโอ' : 'ขยายหน้าต่างวิดีโอ');
+  });
+  $('#tvpClose').addEventListener('click', closePlayer);
+  $('#tvpSize').innerHTML = I.expand;
+  $('#tvpClose').innerHTML = I.close;
 
   /* ---------- toast ---------- */
   const toastEl = $('#toast'); let toastTimer = 0;

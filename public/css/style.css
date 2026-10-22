@@ -315,6 +315,28 @@ a.news-card,a.row-btn,a.tile{color:inherit;text-decoration:none}
 
 @media (prefers-reduced-motion: reduce){ .skel{animation:none} }
 
+/* pop-up video player */
+.tv-player{position:fixed;z-index:8;left:max(16px,calc(env(safe-area-inset-left,0px) + 16px));bottom:calc(env(safe-area-inset-bottom,0px) + 92px);
+  width:min(460px,calc(100% - 32px));display:grid;gap:10px;padding:12px;border-radius:var(--r-panel);
+  background:var(--card-solid);border:1px solid var(--line);box-shadow:0 18px 46px var(--shadow);--c:#ff5476;animation:popIn .3s cubic-bezier(.2,.8,.2,1)}
+@keyframes popIn{from{opacity:0;transform:translateY(16px) scale(.97)}}
+.tv-player.large{width:min(920px,calc(100% - 32px));left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 92px);animation:none}
+.tvp-head{display:flex;align-items:center;gap:10px;min-width:0}
+.tvp-head .row-main{flex:1}
+.tvp-dot{width:10px;height:10px;flex:none;border-radius:50%;background:var(--c);box-shadow:0 0 0 4px color-mix(in srgb,var(--c) 22%,transparent);animation:blink 1.4s infinite}
+.tv-player.paused .tvp-dot{animation:none;opacity:.45}
+.tvp-screen{position:relative;aspect-ratio:16/9;max-width:100%;border-radius:14px;overflow:hidden;background:#000}
+.tvp-screen iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.tvp-controls{display:flex;align-items:center;gap:10px}
+.tvp-controls .btn{--c:#ff5476}
+body.drawer-open .tv-player.large{left:calc((100% - 442px) / 2)}
+@media (max-width:720px){
+  .tv-player,.tv-player.large{left:max(10px,env(safe-area-inset-left,0px));right:max(10px,env(safe-area-inset-right,0px));width:auto;transform:none;
+    top:calc(env(safe-area-inset-top,0px) + 10px);bottom:auto}
+  #tvpSize{display:none}
+}
+@media (prefers-reduced-motion: reduce){ .tv-player{animation:none} .tvp-dot{animation:none} }
+
 /* ---------- closet (dress-up) ---------- */
 .closet{position:fixed;z-index:7;top:calc(env(safe-area-inset-top,0px) + 80px);right:max(16px,calc(env(safe-area-inset-right,0px) + 16px));
   width:min(300px,calc(100% - 32px));max-height:calc(100% - 180px);overflow:auto;display:grid;gap:14px;border-radius:22px;padding:14px 16px 16px}
