@@ -1,10 +1,11 @@
 {
   "name": "office-hub",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
-  "description": "Mockup web app: a cute 3D tiny office that brings Gmail, OneDrive, LINE, news and YouTube together",
+  "description": "A cute 3D tiny office that brings Gmail, OneDrive, LINE, news and YouTube together",
   "scripts": {
     "dev": "npx --yes serve public",
+    "dev:full": "npx --yes netlify-cli dev --dir=public",
     "deploy:netlify": "npx --yes netlify-cli deploy --dir=public --prod",
     "deploy:cloudflare": "npx --yes wrangler pages deploy"
   }

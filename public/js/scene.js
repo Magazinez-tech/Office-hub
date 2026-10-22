@@ -866,7 +866,7 @@
     shiftY += (shiftTY - shiftY) * Math.min(1, dt * 6);
     if (Math.abs(shiftX) > 0.5 || Math.abs(shiftY) > 0.5) camera.setViewOffset(canvas.clientWidth, canvas.clientHeight, shiftX, shiftY, canvas.clientWidth, canvas.clientHeight);
     else if (camera.view && camera.view.enabled) camera.clearViewOffset();
-    controls.autoRotate = !calm && !camTween && !focused && t - lastInteract > 6;
+    controls.autoRotate = false; // no idle sway (it made people dizzy)
     if (controls.autoRotate) {
       const az = controls.getAzimuthalAngle();
       if (az > 1.15 && controls.autoRotateSpeed < 0) controls.autoRotateSpeed *= -1;

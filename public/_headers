@@ -1,11 +1,13 @@
 # ใช้ได้ทั้ง Netlify และ Cloudflare Pages (รูปแบบเดียวกัน)
 # ทุกหน้า: header ความปลอดภัยพื้นฐาน
+# connect-src: Supabase (ระบบสมาชิก), Gmail/YouTube API, Microsoft Graph (OneDrive), Open-Meteo (อากาศ)
+# img-src: รูปปกวิดีโอ YouTube และรูปโปรไฟล์ Google · frame-src: ตัวเล่นวิดีโอ YouTube
 /*
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()
-  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob: https://i.ytimg.com https://*.googleusercontent.com; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://gmail.googleapis.com https://www.googleapis.com https://graph.microsoft.com https://api.open-meteo.com; frame-src https://www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'
 
-# three.js รุ่น r147 ไม่เปลี่ยนแล้ว ให้เบราว์เซอร์เก็บไว้ได้นาน (ถ้าอัปเกรด ให้ตั้งชื่อโฟลเดอร์ใหม่ เช่น three-r160)
+# ไลบรารีที่ตั้งชื่อโฟลเดอร์ตามรุ่นไว้แล้ว ให้เบราว์เซอร์เก็บไว้ได้นาน (ถ้าอัปเกรด ให้ตั้งชื่อโฟลเดอร์ใหม่)
 /vendor/*
   Cache-Control: public, max-age=31536000, immutable

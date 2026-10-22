@@ -53,8 +53,11 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.5" cy="6" r="1"/><circle cx="4.5" cy="12" r="1"/><circle cx="4.5" cy="18" r="1"/></svg><span class="lbl">ภาพรวม</span></button>
     <button id="btnCloset" class="tool" type="button" aria-expanded="false" aria-controls="closet">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M8 3 3 6l2 5 2-1v11h10V10l2 1 2-5-5-3a4 4 0 0 1-8 0Z"/></svg><span class="lbl">ผู้ช่วย</span></button>
-    <button id="btnConnect" class="tool primary" type="button" aria-haspopup="dialog">
+    <button id="btnConnect" class="tool" type="button" aria-haspopup="dialog">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3v4M15 3v4M7 7h10v3a5 5 0 0 1-10 0zM12 15v6"/></svg><span class="lbl">การเชื่อมต่อ</span></button>
+    <button id="btnAccount" class="tool primary" type="button" aria-haspopup="dialog" hidden>
+      <span class="me" id="accountAvatar" hidden></span>
+      <svg id="accountIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg><span class="lbl" id="accountLabel">เข้าสู่ระบบ</span></button>
   </div>
 </header>
 
@@ -109,6 +112,53 @@
   </div>
 </div>
 
+<!-- เข้าสู่ระบบ / สมัครสมาชิก / บัญชี -->
+<div class="modal-back" id="authModal" hidden>
+  <div class="modal auth" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+    <div class="modal-head">
+      <div>
+        <h2 id="authTitle">เข้าสู่ระบบ</h2>
+        <p class="modal-sub" id="authSub">เข้าสู่ระบบเพื่อดูอีเมล ไฟล์ และวิดีโอของคุณเองในห้อง</p>
+      </div>
+      <button class="x" id="authClose" type="button" aria-label="ปิด"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    </div>
+
+    <div id="authGuest">
+      <div class="seg tabs" role="tablist" aria-label="เลือกการทำงาน">
+        <button id="tabLogin" type="button" role="tab" aria-selected="true" aria-pressed="true">เข้าสู่ระบบ</button>
+        <button id="tabSignup" type="button" role="tab" aria-selected="false" aria-pressed="false">สมัครสมาชิก</button>
+      </div>
+      <div class="oauth">
+        <button class="btn oauth-btn" type="button" data-provider="google">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M21.6 12.2c0-.7-.1-1.4-.2-2H12v3.8h5.4a4.6 4.6 0 0 1-2 3v2.5h3.2c1.9-1.7 3-4.3 3-7.3z"/><path fill="#34A853" d="M12 22c2.7 0 5-.9 6.6-2.4l-3.2-2.5c-.9.6-2 1-3.4 1a6 6 0 0 1-5.6-4.1H3.1v2.6A10 10 0 0 0 12 22z"/><path fill="#FBBC05" d="M6.4 14c-.2-.6-.3-1.3-.3-2s.1-1.4.3-2V7.4H3.1a10 10 0 0 0 0 9.2z"/><path fill="#EA4335" d="M12 5.9c1.5 0 2.8.5 3.8 1.5l2.9-2.9A10 10 0 0 0 3.1 7.4L6.4 10A6 6 0 0 1 12 5.9z"/></svg>
+          ดำเนินการต่อด้วย Google</button>
+        <button class="btn oauth-btn" type="button" data-provider="azure">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#F25022" d="M3 3h8.5v8.5H3z"/><path fill="#7FBA00" d="M12.5 3H21v8.5h-8.5z"/><path fill="#00A4EF" d="M3 12.5h8.5V21H3z"/><path fill="#FFB900" d="M12.5 12.5H21V21h-8.5z"/></svg>
+          ดำเนินการต่อด้วย Microsoft</button>
+      </div>
+      <p class="divider"><span>หรือใช้อีเมล</span></p>
+      <form id="authForm" class="compose" novalidate>
+        <label class="field" id="nameField" hidden><span>ชื่อที่ให้ผู้ช่วยเรียก</span><input id="authName" name="name" autocomplete="nickname" maxlength="40"></label>
+        <label class="field"><span>อีเมล</span><input id="authEmail" name="email" type="email" autocomplete="email" required></label>
+        <label class="field"><span>รหัสผ่าน</span><input id="authPassword" name="password" type="password" autocomplete="current-password" minlength="8" required></label>
+        <p class="auth-msg" id="authMsg" role="alert"></p>
+        <button class="btn primary wide" id="authSubmit" type="submit">เข้าสู่ระบบ</button>
+        <button class="linkish" id="authForgot" type="button">ลืมรหัสผ่าน?</button>
+      </form>
+      <p class="note">ปุ่ม Google จะขอสิทธิ์อ่านและส่ง Gmail และดูช่อง YouTube ที่ติดตาม ส่วนปุ่ม Microsoft จะขอสิทธิ์ดูไฟล์ OneDrive เพื่อแสดงในห้อง เราไม่เห็นรหัสผ่านของบัญชีเหล่านั้น</p>
+    </div>
+
+    <div id="authMember" hidden>
+      <div class="member">
+        <span class="me big" id="memberAvatar"></span>
+        <span class="row-main"><span class="row-title" id="memberName"></span><span class="row-sub" id="memberEmail"></span></span>
+      </div>
+      <div class="conn-list" id="memberLinks"></div>
+      <button class="btn wide" id="authSignOut" type="button">ออกจากระบบ</button>
+    </div>
+  </div>
+</div>
+
 <!-- สรุปทุกอย่างเป็นข้อความ: มองไม่เห็นบนจอ แต่โปรแกรมอ่านหน้าจอและ Claude in Chrome อ่านได้ (app.js อัปเดตให้ตลอด) -->
 <section class="sr-only" id="digest" aria-label="ข้อมูลทั้งหมดในแอปแบบข้อความ"></section>
 
@@ -119,6 +169,10 @@
 <script src="vendor/three-r147/three.min.js"></script>
 <script src="vendor/three-r147/OrbitControls.js"></script>
 <script src="vendor/three-r147/RoundedBoxGeometry.js"></script>
+<script src="vendor/supabase-2.45.4/supabase.js"></script>
+<script src="js/config.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/live.js"></script>
 <script src="js/scene.js"></script>
 <script src="js/data.js"></script>
 <script src="js/app.js"></script>

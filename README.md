@@ -1,24 +1,26 @@
-# Office Hub (Mockup)
+# Office Hub
 
-เว็บแอป mockup ที่ใช้ห้องออฟฟิศจิ๋ว 3D เป็นหน้าหลัก สิ่งของแต่ละชิ้นในห้องคือทางเข้าของแต่ละบริการ และมีผู้ช่วย (ตัวละคร) คอยพูดสรุปให้ฟัง
+เว็บแอปที่ใช้ห้องออฟฟิศจิ๋ว 3D เป็นหน้าหลัก สิ่งของแต่ละชิ้นในห้องคือทางเข้าของแต่ละบริการ และมีผู้ช่วย (ตัวละคร) คอยพูดสรุปให้ฟัง
 
-| สิ่งของในห้อง | บริการ | ในแผงมีอะไร |
+| สิ่งของในห้อง | บริการ | ข้อมูล |
 |---|---|---|
-| แล็ปท็อปบนโต๊ะ | Gmail | กล่องจดหมาย, อ่านอีเมล, ตอบกลับ/ส่งต่อ, เขียนอีเมลใหม่ |
-| ชั้นหนังสือ | OneDrive | พื้นที่ที่ใช้, ค้นหาไฟล์, โฟลเดอร์, ไฟล์ล่าสุด |
-| มือถือบนโต๊ะ | LINE | รายการแชท, เปิดแชท, ส่งข้อความ (มีตอบกลับอัตโนมัติจำลอง) |
-| บอร์ดโน้ต | ข่าว | สภาพอากาศ, กรองตามหมวด, กดอ่านสรุปข่าว |
-| ทีวีบนผนัง | YouTube | วิดีโอใหม่, ดูต่อ, กดแล้วเล่นบนทีวีในห้อง |
+| แล็ปท็อปบนโต๊ะ | Gmail | **ของจริง** เมื่อเข้าสู่ระบบด้วย Google: อ่านกล่องจดหมาย, เปิดอ่านอีเมล, ตอบกลับ/ส่งต่อ/เขียนใหม่ (ส่งจริง) |
+| ชั้นหนังสือ | OneDrive | **ของจริง** เมื่อเชื่อม Microsoft: พื้นที่ที่ใช้, โฟลเดอร์, ไฟล์ล่าสุด (กดแล้วเปิดใน OneDrive) |
+| มือถือบนโต๊ะ | LINE | **ข้อมูลตัวอย่างเสมอ** เพราะ LINE ไม่เปิด API ให้อ่านแชทส่วนตัว |
+| บอร์ดโน้ต | ข่าว | **ของจริงเสมอ** ข่าวภาษาไทยจาก Google News 5 หมวด + อากาศจาก Open-Meteo |
+| ทีวีบนผนัง | YouTube | **ของจริง** เมื่อเข้าสู่ระบบด้วย Google: วิดีโอใหม่จากช่องที่ติดตาม เล่นได้ในแผง |
 
-> **ข้อมูลทั้งหมดเป็นข้อมูลสมมติ** และปุ่ม "เชื่อมต่อ" เป็นการจำลอง ยังไม่ได้เข้าสู่ระบบบัญชีจริง
+> ถ้ายังไม่เข้าสู่ระบบ (หรือยังไม่ได้ตั้งค่า Supabase) Gmail, OneDrive และ YouTube จะแสดงข้อมูลตัวอย่าง
 
 ## วิธีเปิดดูในเครื่อง
 
-ดับเบิลคลิก `public/index.html` ได้เลย หรือถ้าจะพัฒนาต่อ ให้เปิด Terminal ในโฟลเดอร์นี้แล้วรัน
+เปิด Terminal ในโฟลเดอร์นี้แล้วรัน (บน PowerShell ของเครื่องนี้ใช้ `npm.cmd` แทน `npm`)
 
 ```bash
-npm run dev
+npm run dev:full
 ```
+
+คำสั่งนี้ใช้ Netlify Dev ซึ่งรันฟังก์ชันข่าว (`/api/news`) ด้วย ถ้าใช้ `npm run dev` (เปิดไฟล์อย่างเดียว) ข่าวจะเป็นข้อมูลตัวอย่าง
 
 ## ขึ้นเว็บจริง (Netlify หรือ Cloudflare)
 
@@ -110,10 +112,15 @@ office-hub/
 │   ├── favicon.svg         ไอคอน
 │   ├── _headers            header ความปลอดภัยและแคช (Netlify + Cloudflare)
 │   ├── css/style.css       สไตล์ทั้งหมด (ตัวแปรสีอยู่บนสุดใน :root รองรับธีมมืด)
+│   ├── js/config.js        ค่าตั้ง: Supabase URL / anon key, ตำแหน่งอากาศ, สิทธิ์ที่ขอ
+│   ├── js/auth.js          ระบบสมาชิก (Supabase): สมัคร, เข้าสู่ระบบ, Google, Microsoft
+│   ├── js/live.js          ดึงข้อมูลจริง: Gmail, YouTube, OneDrive, ข่าว, อากาศ
 │   ├── js/scene.js         ฉาก 3D (ห้อง, มือถือ, ทีวี, จุดคลิก, การเลื่อนกล้อง)
-│   ├── js/data.js          ข้อมูลตัวอย่างทั้งหมด แก้ที่นี่ที่เดียว
-│   ├── js/app.js           ตรรกะของแอป: แถบแอป, ป้าย, แผง, ภาพรวม, การเชื่อมต่อจำลอง
-│   └── vendor/three-r147/  three.js r147 (เก็บไว้ในเครื่อง)
+│   ├── js/data.js          ข้อมูลตัวอย่าง (ใช้ตอนยังไม่เข้าสู่ระบบ)
+│   ├── js/app.js           ตรรกะของแอป: แถบแอป, ป้าย, แผง, ภาพรวม, บัญชี, การเชื่อมต่อ
+│   └── vendor/             three.js r147 และ supabase-js 2.45.4 (เก็บไว้ในเครื่อง)
+├── netlify/functions/news.mjs   ฟังก์ชันข่าวสำหรับ Netlify (/api/news)
+├── functions/api/news.js        ฟังก์ชันข่าวสำหรับ Cloudflare Pages (/api/news)
 ├── netlify.toml            ตั้งค่า Netlify
 ├── wrangler.toml           ตั้งค่า Cloudflare Pages
 ├── package.json            คำสั่ง dev / deploy
@@ -136,19 +143,52 @@ office-hub/
 
 ตำแหน่งกล้องและป้ายของแต่ละสิ่งของ ปรับได้ที่ `const HOTSPOTS` ใน `scene.js`
 
-## ถ้าจะเชื่อมต่อของจริง
+## เปิดระบบสมาชิกและเชื่อมบัญชีจริง
 
-ต้องมี **เซิร์ฟเวอร์ (backend)** สำหรับขั้นตอน OAuth และเก็บ token อย่างปลอดภัย ห้ามใส่ client secret ไว้ในไฟล์หน้าเว็บ
+ข่าวและอากาศใช้ได้ทันทีโดยไม่ต้องตั้งค่า ส่วนการสมัครสมาชิก การเข้าสู่ระบบ Gmail, YouTube และ OneDrive ต้องตั้งค่า 3 ที่ (ทำครั้งเดียว ประมาณ 30–45 นาที)
 
-| บริการ | API ที่ใช้ | หมายเหตุ |
-|---|---|---|
-| Gmail | Gmail API + Google OAuth 2.0 | ขอสิทธิ์อ่านอย่างเดียวก่อน (`gmail.readonly`) แล้วค่อยเพิ่มสิทธิ์ส่ง (`gmail.send`) Google จะต้องตรวจสอบแอปก่อนเปิดให้คนทั่วไปใช้ |
-| OneDrive | Microsoft Graph API + Microsoft identity platform | ใช้ `/me/drive/recent` สำหรับไฟล์ล่าสุด และ `/me/drive` สำหรับพื้นที่ที่ใช้ |
-| LINE | LINE Messaging API (LINE Official Account) | **ดึงแชทส่วนตัวของผู้ใช้ไม่ได้ผ่าน API สาธารณะ** ทำได้เฉพาะข้อความที่คนส่งหา Official Account ของคุณ (ผ่าน webhook) แผง LINE ของจริงจึงต้องออกแบบใหม่ เช่น เป็นกล่องข้อความของร้าน/บริษัท |
-| ข่าว | RSS ของสำนักข่าว หรือบริการ News API | ควรดึงผ่าน backend แล้วเก็บแคช เพื่อเลี่ยงปัญหา CORS และจำนวนครั้งที่เรียกได้ |
-| YouTube | YouTube Data API v3 + IFrame Player API | ใช้ `subscriptions` + `activities` หาวิดีโอใหม่ เล่นจริงด้วย IFrame Player ในแผง (ทีวีในห้องเป็นแค่ภาพแสดงสถานะ) |
+> **สำคัญ:** client secret ของ Google และ Microsoft ใส่ใน Supabase เท่านั้น ห้ามใส่ในโค้ดหรือส่งให้ใคร สิ่งเดียวที่ใส่ในเว็บได้คือ **Project URL** และ **anon public key** ของ Supabase
 
-จุดที่ต้องแก้ใน `app.js` เมื่อต่อของจริง:
-1. `startConnect()` เปลี่ยนจาก `setTimeout` เป็นการพาไปหน้า OAuth ของ backend
-2. แทน `window.HUB_DATA` ด้วยข้อมูลที่ `fetch()` จาก backend
-3. `SUBMIT.sendMail` และ `SUBMIT.sendChat` ให้ส่งไปที่ backend แทนการจำลอง
+### ขั้นที่ 1: Supabase (ระบบสมาชิก, ฟรี)
+
+1. สมัครที่ https://supabase.com แล้วสร้างโปรเจกต์ใหม่ (เลือก region Singapore)
+2. **Project Settings > API** คัดลอก `Project URL` และ `anon public` key ไปใส่ใน `public/js/config.js`
+3. **Authentication > URL Configuration**
+   - Site URL: `https://bigmax.netlify.app`
+   - Redirect URLs: เพิ่ม `https://bigmax.netlify.app/**` และ `http://localhost:8888/**`
+4. **Authentication > Sign In / Providers**
+   - Email: เปิดไว้ (ค่าเริ่มต้นจะส่งอีเมลยืนยันตอนสมัคร)
+   - เปิด **Allow manual linking** เพื่อให้คนที่สมัครด้วยอีเมลเชื่อม Google / Microsoft เพิ่มได้
+
+### ขั้นที่ 2: Google (Gmail + YouTube)
+
+1. https://console.cloud.google.com สร้างโปรเจกต์ใหม่
+2. **APIs & Services > Library** เปิด **Gmail API** และ **YouTube Data API v3**
+3. **OAuth consent screen** (หรือ Google Auth Platform): User type = External, ใส่ชื่อแอปและอีเมล
+   - Scopes: `gmail.readonly`, `gmail.send`, `youtube.readonly`
+   - **Test users:** ใส่ Gmail ของคนที่จะใช้ (ช่วงทดสอบใช้ได้สูงสุด 100 คน)
+4. **Credentials > Create credentials > OAuth client ID** ชนิด Web application
+   - Authorized redirect URI: `https://<project-ref>.supabase.co/auth/v1/callback` (ดูได้จากหน้า Google provider ใน Supabase)
+5. นำ Client ID และ Client secret ไปใส่ที่ Supabase **Authentication > Providers > Google** แล้วเปิดใช้
+
+Gmail เป็นข้อมูลอ่อนไหว Google จึงแสดงหน้า "แอปยังไม่ได้รับการยืนยัน" ระหว่างทดสอบ (กด ขั้นสูง > ไปต่อ ได้) ถ้าจะเปิดให้คนทั่วไปใช้ ต้องส่งแอปให้ Google ตรวจสอบ (verification) ก่อน
+
+### ขั้นที่ 3: Microsoft (OneDrive)
+
+1. https://portal.azure.com > **Microsoft Entra ID > App registrations > New registration**
+   - Supported account types: บัญชีองค์กรใดก็ได้ และบัญชี Microsoft ส่วนตัว
+   - Redirect URI (Web): `https://<project-ref>.supabase.co/auth/v1/callback`
+2. **Certificates & secrets > New client secret** คัดลอกค่า Value
+3. **API permissions > Microsoft Graph > Delegated**: `User.Read`, `Files.Read`, `offline_access`, `email`
+4. ใส่ Application (client) ID และ secret ใน Supabase **Providers > Azure** ช่อง Azure Tenant URL ใส่ `https://login.microsoftonline.com/common`
+
+### ขั้นที่ 4: ขึ้นเว็บ
+
+ใส่ค่าใน `public/js/config.js` แล้ว commit + deploy ปุ่ม "เข้าสู่ระบบ" จะขึ้นที่มุมขวาบนเอง
+
+### ข้อควรรู้
+
+- token ของ Google / Microsoft เก็บในเบราว์เซอร์และใช้ได้ราว 1 ชั่วโมง พอหมดอายุ แผงจะขึ้นปุ่ม "เชื่อมต่อ" ให้กดเชื่อมใหม่ ถ้าอยากให้ต่ออายุเองต้องเพิ่ม backend ที่เก็บ refresh token
+- อีเมลที่เปิดอ่านจะไม่ถูกทำเครื่องหมายว่าอ่านแล้วใน Gmail จริง (ขอสิทธิ์อ่านอย่างเดียว)
+- LINE ไม่มี API สำหรับอ่านแชทส่วนตัว ถ้าจะทำของจริงต้องเป็น LINE Official Account (Messaging API) ของร้านหรือบริษัท
+- ฟังก์ชันข่าวมีสองชุดเหมือนกัน: `netlify/functions/news.mjs` และ `functions/api/news.js` แก้แล้วต้องแก้ทั้งสองไฟล์
