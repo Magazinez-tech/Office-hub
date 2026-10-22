@@ -1,4 +1,6 @@
 # Netlify: เว็บนี้เป็นไฟล์ static ล้วน ไม่มีขั้นตอน build
+# ตั้ง command ไว้ชัดๆ เพื่อทับคำสั่ง build เดิมที่อาจค้างอยู่ในหน้าตั้งค่าของโปรเจกต์
 # header ต่างๆ อยู่ใน public/_headers (ใช้ร่วมกับ Cloudflare Pages)
 [build]
   publish = "public"
+  command = "echo 'Static site: no build step'"
