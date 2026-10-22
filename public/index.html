@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Office Hub</title>
+  <meta name="description" content="Mockup เว็บแอปห้องออฟฟิศจิ๋ว 3D ที่รวม Gmail, OneDrive, LINE, ข่าว และ YouTube ไว้ในที่เดียว">
+  <meta name="theme-color" content="#ffe6da" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#181b40" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <!-- ตัวอย่างเวลาแชร์ลิงก์ใน LINE / Facebook (ใส่ og:image ได้เมื่อรู้โดเมนจริง) -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Office Hub · ออฟฟิศจิ๋ว 3D">
+  <meta property="og:description" content="ห้องออฟฟิศ 3D น่ารักๆ ที่รวมอีเมล ไฟล์ แชท ข่าว และวิดีโอไว้ในที่เดียว (Mockup)">
+  <meta property="og:locale" content="th_TH">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mali:wght@400;600;700&family=IBM+Plex+Sans+Thai:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="stage" id="stage" data-mode="day">
+  <canvas id="scene" role="img" tabindex="0"
+    aria-label="ห้องออฟฟิศจิ๋วแบบ 3D แต่ละสิ่งของคือทางเข้าแอป: แล็ปท็อปคือ Gmail ชั้นหนังสือคือ OneDrive มือถือคือ LINE บอร์ดโน้ตคือข่าว ทีวีคือ YouTube"></canvas>
+</div>
+
+<!-- ส่วนหัว: ชื่อแอป สรุปวันนี้ และปุ่มเครื่องมือ -->
+<header class="hub-head">
+  <section class="brand-card" aria-label="สรุปวันนี้">
+    <div class="brand-row">
+      <span class="logo" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3 4 7.5v9L12 21l8-4.5v-9z"/><path d="M4 7.5 12 12l8-4.5M12 12v9"/></svg></span>
+      <div class="brand-text">
+        <h1>Office Hub</h1>
+        <span class="sub">ออฟฟิศจิ๋วที่รวมทุกแอปไว้ในห้องเดียว</span>
+      </div>
+      <span class="mock-pill" title="ข้อมูลทั้งหมดเป็นข้อมูลตัวอย่าง">Mockup</span>
+    </div>
+    <p class="greet"><strong id="greet">สวัสดี</strong> · <span id="today"></span> · <span id="chip">--:--</span></p>
+    <div class="summary" id="summary"></div>
+  </section>
+
+  <div class="head-tools" role="toolbar" aria-label="เครื่องมือ">
+    <div class="seg" role="group" aria-label="ช่วงเวลาในห้อง">
+      <button id="btnDay" type="button" aria-pressed="true" aria-label="กลางวัน" title="กลางวัน">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg></button>
+      <button id="btnNight" type="button" aria-pressed="false" aria-label="กลางคืน" title="กลางคืน">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z"/></svg></button>
+    </div>
+    <button id="btnReset" class="tool" type="button" aria-label="มุมกล้องเริ่มต้น" title="มุมกล้องเริ่มต้น">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg></button>
+    <button id="btnOverview" class="tool" type="button" aria-label="ภาพรวมวันนี้แบบข้อความ" title="ภาพรวมวันนี้แบบข้อความ">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.5" cy="6" r="1"/><circle cx="4.5" cy="12" r="1"/><circle cx="4.5" cy="18" r="1"/></svg><span class="lbl">ภาพรวม</span></button>
+    <button id="btnCloset" class="tool" type="button" aria-expanded="false" aria-controls="closet">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M8 3 3 6l2 5 2-1v11h10V10l2 1 2-5-5-3a4 4 0 0 1-8 0Z"/></svg><span class="lbl">ผู้ช่วย</span></button>
+    <button id="btnConnect" class="tool primary" type="button" aria-haspopup="dialog">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3v4M15 3v4M7 7h10v3a5 5 0 0 1-10 0zM12 15v6"/></svg><span class="lbl">การเชื่อมต่อ</span></button>
+  </div>
+</header>
+
+<!-- ป้ายลอยเหนือสิ่งของในห้อง (ตำแหน่งคำนวณจากฉาก 3D ทุกเฟรม) -->
+<div class="pins" id="pins"></div>
+
+<!-- แถบแอปด้านล่าง -->
+<nav class="dock" id="dock" aria-label="แอปที่เชื่อมต่อ"></nav>
+
+<!-- แผงของแต่ละบริการ -->
+<aside class="drawer" id="drawer" aria-labelledby="drawerTitle" tabindex="-1" hidden>
+  <div class="drawer-head">
+    <span class="svc-icon" id="drawerIcon" aria-hidden="true"></span>
+    <div class="drawer-titles">
+      <h2 id="drawerTitle"></h2>
+      <span class="status" id="drawerStatus"></span>
+    </div>
+    <button class="x" id="drawerClose" type="button" aria-label="ปิดแผง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+  </div>
+  <div class="drawer-body" id="drawerBody"></div>
+</aside>
+
+<!-- แต่งตัวผู้ช่วย (ใช้โค้ดเดียวกับออฟฟิศจิ๋ว) -->
+<div class="closet" id="closet" role="dialog" aria-labelledby="closetTitle" hidden>
+  <div class="closet-head">
+    <h2 id="closetTitle">แต่งตัวผู้ช่วย</h2>
+    <div class="head-actions">
+      <button class="shuffle" id="shuffle" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg>สุ่มลุค</button>
+      <button class="x" id="closetClose" type="button" aria-label="ปิด"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    </div>
+  </div>
+  <section><h3>เพศ</h3><div class="opts" id="gender"></div></section>
+  <section><h3>สีผม</h3><div class="swatches" id="hairColors"></div></section>
+  <section><h3>ทรงผม</h3><div class="opts" id="hairStyles"></div></section>
+  <section><h3>ชุด</h3><div class="opts" id="outfits"></div></section>
+  <section><h3>สีชุด</h3><div class="swatches" id="outfitColors"></div></section>
+</div>
+
+<!-- หน้าต่างจัดการการเชื่อมต่อ -->
+<div class="modal-back" id="connectModal" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="connectTitle">
+    <div class="modal-head">
+      <div>
+        <h2 id="connectTitle">การเชื่อมต่อ</h2>
+        <p class="modal-sub">เลือกบริการที่จะให้ผู้ช่วยในห้องดูแล</p>
+      </div>
+      <button class="x" id="connectClose" type="button" aria-label="ปิด"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    </div>
+    <div class="conn-list" id="connectList"></div>
+    <p class="note">นี่คือ mockup ยังไม่ได้เข้าสู่ระบบบัญชีจริง ในเวอร์ชันจริง ปุ่ม "เชื่อมต่อ" จะพาไปหน้าขออนุญาต (OAuth) ของผู้ให้บริการแต่ละราย และแอปจะไม่เห็นรหัสผ่านของคุณ</p>
+  </div>
+</div>
+
+<!-- สรุปทุกอย่างเป็นข้อความ: มองไม่เห็นบนจอ แต่โปรแกรมอ่านหน้าจอและ Claude in Chrome อ่านได้ (app.js อัปเดตให้ตลอด) -->
+<section class="sr-only" id="digest" aria-label="ข้อมูลทั้งหมดในแอปแบบข้อความ"></section>
+
+<div class="bubble" id="bubble" role="status" aria-live="polite"></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div class="fallback" id="fallback" hidden>เบราว์เซอร์นี้แสดงภาพ 3D ไม่ได้ ลองเปิดด้วย Chrome, Edge หรือ Safari รุ่นล่าสุด (แถบแอปด้านล่างยังใช้งานได้)</div>
+
+<script src="vendor/three-r147/three.min.js"></script>
+<script src="vendor/three-r147/OrbitControls.js"></script>
+<script src="vendor/three-r147/RoundedBoxGeometry.js"></script>
+<script src="js/scene.js"></script>
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

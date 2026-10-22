@@ -1,0 +1,4 @@
+# Netlify: เว็บนี้เป็นไฟล์ static ล้วน ไม่มีขั้นตอน build
+# header ต่างๆ อยู่ใน public/_headers (ใช้ร่วมกับ Cloudflare Pages)
+[build]
+  publish = "public"

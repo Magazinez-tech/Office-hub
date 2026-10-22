@@ -1,0 +1,2 @@
+# เก็บไฟล์ข้อความเป็น LF เสมอ ให้ตรงกันทั้งบน Windows และเซิร์ฟเวอร์ Netlify / Cloudflare
+* text=auto eol=lf
